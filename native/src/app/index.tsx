@@ -2,7 +2,8 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useContext, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Text, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AxiosError } from 'axios';
 
@@ -89,13 +90,13 @@ export default function Index() {
 
   const hasActiveAdFreePeriod = Boolean(
     monetizationStatus?.adFreeUntil &&
-      new Date(monetizationStatus.adFreeUntil).getTime() > Date.now(),
+    new Date(monetizationStatus.adFreeUntil).getTime() > Date.now(),
   );
   const shouldShowAds = Boolean(
     isTenantRole &&
-      monetizationStatus &&
-      !monetizationStatus.hasPaid &&
-      !hasActiveAdFreePeriod,
+    monetizationStatus &&
+    !monetizationStatus.hasPaid &&
+    !hasActiveAdFreePeriod,
   );
 
   const handleMockAdCompleted = async () => {
@@ -129,6 +130,13 @@ export default function Index() {
     <SafeAreaView edges={['bottom']} style={globalStyles.screen}>
       <View style={globalStyles.centerContent}>
         <Text style={globalStyles.title}>Hello World</Text>
+
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => router.push('/create-card')}
+        >
+          <Text style={globalStyles.primaryButtonText}>Create Card</Text>
+        </Pressable>
       </View>
 
       <View
@@ -156,8 +164,8 @@ export default function Index() {
             ? 'Monetization status: loading...'
             : monetizationStatus
               ? `Has paid: ${monetizationStatus.hasPaid ? 'Y' : 'N'} | Ad free until: ${formatDateTime(
-                  monetizationStatus.adFreeUntil,
-                )}`
+                monetizationStatus.adFreeUntil,
+              )}`
               : 'Has paid: - | Ad free until: -'}
         </Text>
         {monetizationError && (
