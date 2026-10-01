@@ -2,6 +2,7 @@ release-key*.*
 forAAB/
 notes-unrelated/native/
 *.apk
+backend-node/build/
 
 
 # Logs

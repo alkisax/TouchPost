@@ -1,1 +1,0 @@
-{"version":3,"file":"organizationAccess.service.js","sourceRoot":"","sources":["../../../../src/login/services/organizationAccess.service.ts"],"names":[],"mappings":";;;AAAA,sEAAkE;AAE3D,MAAM,sBAAsB,GAAG,KAAK,EACzC,MAAc,EACU,EAAE;IAC1B,MAAM,UAAU,GAAG,MAAM,0CAAmB,CAAC,qBAAqB,CAAC,MAAM,CAAC,CAAC;IAE3E,OAAO,UAAU,EAAE,cAAc,IAAI,IAAI,CAAC;AAC5C,CAAC,CAAC;AANW,QAAA,sBAAsB,0BAMjC"}
