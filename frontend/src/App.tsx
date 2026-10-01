@@ -7,6 +7,8 @@ import ProtectedRoute from "./authLogin/service/ProtectedRoute";
 import SkeletonGeneral from "./components/SkeletonGeneral";
 import Home from "./pages/Home";
 
+const CardViewer = lazy(() => import("./pages/CardViewer"));
+
 const Login = lazy(() => import("./authLogin/Login"));
 const RegisterPageBackend = lazy(
   () => import("./authLogin/loginBackend/RegisterPageBackend"),
@@ -26,6 +28,8 @@ function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+
+        <Route path="/v" element={<CardViewer />} />
 
         <Route
           path="/info"

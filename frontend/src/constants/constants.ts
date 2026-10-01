@@ -1,7 +1,9 @@
-// frontend\src\constants\constants.ts
-export const backendUrl =  import.meta.env.VITE_BACKEND_URL || "http://localhost:3020";
+// frontend/src/constants/constants.ts
 
-export const appName = "App starter"
+export const backendUrl =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:3020";
+
+export const appName = "TouchPost";
 
 export const colors = {
   bg: "#0f0f1a",
@@ -11,3 +13,6 @@ export const colors = {
   text: "#ffffff",
   dim: "#aaaaaa",
 };
+
+export const PRIMARY_COLOR = colors.primary;
+export const PRIMARY_WHITE = "#ffffff";
