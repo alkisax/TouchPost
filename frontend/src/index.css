@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fffdf4;
+  --surface: #ffffff;
+  --surface-alt: #f4f1e3;
+  --text: #222222;
+  --text-muted: #666666;
+  --primary: #5c1a1b;
+  --primary-active: #7a2224;
+  --secondary: #6c63ff;
+  --accent: #5c1a1b;
+  --border: #ddd4aa;
+  --panel: var(--surface);
+  --text-secondary: #555555;
+  --border-subtle: rgba(0, 0, 0, 0.1);
+  --button-border: var(--border);
+  --error: #d63031;
+  --app-background: var(--background);
+  --bg: var(--background);
+  --text-h: var(--text);
+  --code-bg: var(--surface-alt);
+  --accent-bg: rgba(92, 26, 27, 0.1);
+  --accent-border: rgba(92, 26, 27, 0.5);
+  --social-bg: rgba(244, 241, 227, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+ [data-theme="dark"] {
+  --background: #121212;
+  --surface: #1b1b1b;
+  --surface-alt: #1f1f1f;
+  --text: #f1f1f1;
+  --text-muted: #999999;
+  --primary: #7a2224;
+  --primary-active: #a62d30;
+  --secondary: #6c63ff;
+  --accent: #a62d30;
+  --border: #333333;
+  --panel: var(--surface);
+  --text-secondary: #a0a0b0;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --button-border: #444444;
+  --error: #ff6b6b;
+  --app-background: var(--background);
+  --bg: var(--background);
+  --text-h: var(--text);
+  --code-bg: var(--surface-alt);
+  --accent-bg: rgba(166, 45, 48, 0.15);
+  --accent-border: rgba(166, 45, 48, 0.5);
+  --social-bg: rgba(255, 255, 255, 0.06);
+  --shadow:
+    rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  color-scheme: dark;
+}
+
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--app-background);
+  color: var(--text);
+}
+
+/* Keep existing MUI surfaces and form controls aligned with the shared palette. */
+.MuiPaper-root,
+.MuiDialog-paper {
+  background-color: var(--panel);
+  color: var(--text);
+}
+
+.MuiInputBase-root {
+  color: var(--text);
+}
+
+.MuiInputLabel-root {
+  color: var(--text-muted);
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--border);
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline,
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-active);
+}
+
+.MuiButton-contained {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.MuiButton-contained:hover {
+  background-color: var(--primary-active);
+}

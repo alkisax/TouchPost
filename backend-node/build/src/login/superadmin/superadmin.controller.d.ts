@@ -1,0 +1,23 @@
+import type { Response } from 'express';
+import type { AuthRequest } from '../types/user.types';
+export declare const superadminController: {
+    listUsers: (_req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    getUser: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    createPlainUser: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    updateManagedUser: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    deletePlainUser: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    listAdmins: (_req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    getAdmin: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    listOrganizations: (_req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    getOrganization: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    getSummary: (_req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    updateUserAdStatus: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    getUserAdStatus: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    createAdmin: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+    updateAdmin: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    deleteAdmin: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    createStaff: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    updateStaff: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    removeStaff: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+    deleteStaffByUserId: (req: AuthRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+};

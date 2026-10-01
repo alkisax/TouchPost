@@ -1,3 +1,9 @@
+release-key*.*
+forAAB/
+notes-unrelated/native/
+*.apk
+
+
 # Logs
 logs
 *.log

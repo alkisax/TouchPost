@@ -1,0 +1,28 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const verification_middleware_1 = require("../middleware/verification.middleware");
+const superadmin_controller_1 = require("./superadmin.controller");
+const router = (0, express_1.Router)();
+router.use(verification_middleware_1.middleware.verifyToken, verification_middleware_1.middleware.checkGlobalRole('SUPERADMIN'));
+router.get('/stats', superadmin_controller_1.superadminController.getSummary);
+router.get('/users', superadmin_controller_1.superadminController.listUsers);
+router.get('/users/:userId', superadmin_controller_1.superadminController.getUser);
+router.post('/users', superadmin_controller_1.superadminController.createPlainUser);
+router.put('/users/:userId', superadmin_controller_1.superadminController.updateManagedUser);
+router.delete('/users/:userId', superadmin_controller_1.superadminController.deletePlainUser);
+router.post('/admins', superadmin_controller_1.superadminController.createAdmin);
+router.get('/admins', superadmin_controller_1.superadminController.listAdmins);
+router.get('/admins/:userId', superadmin_controller_1.superadminController.getAdmin);
+router.patch('/admins/:userId', superadmin_controller_1.superadminController.updateAdmin);
+router.delete('/admins/:userId', superadmin_controller_1.superadminController.deleteAdmin);
+router.delete('/staff/:userId', superadmin_controller_1.superadminController.deleteStaffByUserId);
+router.get('/companies', superadmin_controller_1.superadminController.listOrganizations);
+router.get('/organizations', superadmin_controller_1.superadminController.listOrganizations);
+router.put('/users/:userId/ad-status', superadmin_controller_1.superadminController.updateUserAdStatus);
+router.get('/users/:userId/ad-status', superadmin_controller_1.superadminController.getUserAdStatus);
+router.post('/organizations/:organizationId/staff', superadmin_controller_1.superadminController.createStaff);
+router.patch('/organizations/:organizationId/staff/:userId', superadmin_controller_1.superadminController.updateStaff);
+router.delete('/organizations/:organizationId/staff/:userId', superadmin_controller_1.superadminController.removeStaff);
+exports.default = router;
+//# sourceMappingURL=superadmin.routes.js.map
