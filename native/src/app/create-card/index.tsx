@@ -9,6 +9,8 @@ import { publicWebUrl } from '@/constants/constants';
 import { compactImageUrls, shortenImageUrls } from '@/utils/compactImageUrls';
 import axios from 'axios';
 import CountdownButton from '@/components/CountdownButton';
+import { readNfc } from '@/utils/readNfc';
+import { writeNfcUrl } from '@/utils/writeNfc';
 
 export default function CreateCard() {
   const { colors } = useContext(ThemeContext);
@@ -121,6 +123,22 @@ export default function CreateCard() {
             <Text style={globalStyles.primaryButtonText}>Copy URL</Text>
           </Pressable>
         </>
+      )}
+
+      <Pressable
+        style={globalStyles.primaryButton}
+        onPress={() => void readNfc()}
+      >
+        <Text style={globalStyles.primaryButtonText}>Read NFC</Text>
+      </Pressable>
+
+      {generatedUrl !== '' && (
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => void writeNfcUrl(generatedUrl)}
+        >
+          <Text style={globalStyles.primaryButtonText}>Write NFC</Text>
+        </Pressable>
       )}
     </SafeAreaView>
   );
