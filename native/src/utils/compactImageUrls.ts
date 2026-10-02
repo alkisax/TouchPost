@@ -30,37 +30,33 @@ export const compactImageUrls = (urls: string[]): CompactImageUrls => {
   };
 };
 
-
-const sleep = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+// Shortens each image URL one by one and returns the shortened URLs.
+// qork.me is a free URL-shortening service used here as a fallback: https://qork.me
+//για V1/testing και πιθανώς μικρό production app, αλλά όχι κάτι στο οποίο θα να βασίζεται για πάντα ένα σοβαρό προϊόν χωρίς fallback.
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const shortenImageUrls = async (urls: string[]) => {
   const shortenedUrls: string[] = [];
 
   for (let index = 0; index < urls.length; index++) {
-    try {
-      const response = await axios.post(
-        'https://cleanuri.com/api/v1/shorten',
-        `url=${encodeURIComponent(urls[index])}`,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      );
+    const response = await axios.get("https://qork.me/api/shorten", {
+      params: {
+        url: urls[index],
+      },
+    });
 
-      shortenedUrls.push(response.data.result_url);
+    const shortUrl = response.data.href;
 
-      if (index < urls.length - 1) {
-        await sleep(1000);
-      }
-    } catch (error) {
-      console.log('CleanURI error:', error);
-      throw error;
+    if (!shortUrl) {
+      throw new Error("qork shortening failed.");
+    }
+
+    shortenedUrls.push(shortUrl);
+
+    if (index < urls.length - 1) {
+      await sleep(1000);
     }
   }
 
   return shortenedUrls;
 };
-
-

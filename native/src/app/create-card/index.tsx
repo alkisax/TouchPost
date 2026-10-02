@@ -8,6 +8,7 @@ import { createGlobalStyles, SPACING } from '@/styles/global';
 import { publicWebUrl } from '@/constants/constants';
 import { compactImageUrls, shortenImageUrls } from '@/utils/compactImageUrls';
 import axios from 'axios';
+import CountdownButton from '@/components/CountdownButton';
 
 export default function CreateCard() {
   const { colors } = useContext(ThemeContext);
@@ -34,20 +35,6 @@ export default function CreateCard() {
     const updatedUrls = [...imageUrls];
     updatedUrls[index] = value;
     setImageUrls(updatedUrls);
-  };
-
-  const testCleanUri = async () => {
-    const response = await axios.post(
-      'https://cleanuri.com/api/v1/shorten',
-      'url=https%3A%2F%2Fexample.com',
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      },
-    );
-
-    console.log(response.data);
   };
 
   const handleCreateUrl = async () => {
@@ -115,19 +102,13 @@ export default function CreateCard() {
         ))}
       </View>
 
-      <Pressable
-        style={globalStyles.primaryButton}
+      <CountdownButton
+        label="Create URL"
+        seconds={10}
         onPress={handleCreateUrl}
-      >
-        <Text style={globalStyles.primaryButtonText}>Create URL</Text>
-      </Pressable>
-
-      <Pressable
-        style={globalStyles.primaryButton}
-        onPress={() => void testCleanUri()}
-      >
-        <Text style={globalStyles.primaryButtonText}>Test CleanURI</Text>
-      </Pressable>
+        buttonStyle={globalStyles.primaryButton}
+        textStyle={globalStyles.primaryButtonText}
+      />
 
       {generatedUrl !== '' && (
         <>
