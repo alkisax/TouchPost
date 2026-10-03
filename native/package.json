@@ -23,6 +23,7 @@
     "expo-audio": "~55.0.17",
     "expo-clipboard": "~55.0.17",
     "expo-constants": "~55.0.17",
+    "expo-dev-client": "~55.0.40",
     "expo-device": "~55.0.20",
     "expo-font": "~55.0.8",
     "expo-glass-effect": "~55.0.11",

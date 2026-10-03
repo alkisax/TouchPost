@@ -19,6 +19,7 @@ export default function CreateCard() {
   const [imageUrls, setImageUrls] = useState(['', '', '', '', '']);
   const [generatedUrl, setGeneratedUrl] = useState('');
   const [generatedUrlBytes, setGeneratedUrlBytes] = useState(0);
+  const [nfcResult, setNfcResult] = useState('');
 
   const getUrlBytes = (url: string) => {
     return new TextEncoder().encode(url).length;
@@ -127,10 +128,23 @@ export default function CreateCard() {
 
       <Pressable
         style={globalStyles.primaryButton}
-        onPress={() => void readNfc()}
+        onPress={async () => {
+          try {
+            const tag = await readNfc();
+            setNfcResult(JSON.stringify(tag, null, 2));
+          } catch (error) {
+            setNfcResult(String(error));
+          }
+        }}
       >
         <Text style={globalStyles.primaryButtonText}>Read NFC</Text>
       </Pressable>
+
+      {nfcResult !== '' && (
+        <Text style={globalStyles.text}>
+          {nfcResult}
+        </Text>
+      )}
 
       {generatedUrl !== '' && (
         <Pressable
