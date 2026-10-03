@@ -26,10 +26,11 @@ const AdminLayout = lazy(() => import("./admin/AdminLayout"));
 function App() {
   return (
     <Routes>
+
+      <Route path="/v" element={<CardViewer />} />
+
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-
-        <Route path="/v" element={<CardViewer />} />
 
         <Route
           path="/info"

@@ -13,3 +13,18 @@ export const appName = "My Turn";
 
 export const bannerAdUnitId = "ca-app-pub-change later";
 export const interstitialAdUnitId = "ca-app-pub-change later";
+
+export const countries = [
+  {
+    code: 'GE',
+    name: 'Georgia',
+  },
+  {
+    code: 'AM',
+    name: 'Armenia',
+  },
+  {
+    code: 'GR',
+    name: 'Greece',
+  },
+];

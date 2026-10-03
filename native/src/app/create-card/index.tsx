@@ -2,7 +2,9 @@ import { useContext, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
+import { Picker } from '@react-native-picker/picker';
 
+import { countries } from '@/constants/constants';
 import { ThemeContext } from '@/context/ThemeContext';
 import { createGlobalStyles, SPACING } from '@/styles/global';
 import { publicWebUrl } from '@/constants/constants';
@@ -17,6 +19,7 @@ export default function CreateCard() {
   const globalStyles = createGlobalStyles(colors);
 
   const [imageUrls, setImageUrls] = useState(['', '', '', '', '']);
+  const [countryCode, setCountryCode] = useState('GR');
   const [generatedUrl, setGeneratedUrl] = useState('');
   const [generatedUrlBytes, setGeneratedUrlBytes] = useState(0);
   const [nfcResult, setNfcResult] = useState('');
@@ -51,6 +54,7 @@ export default function CreateCard() {
 
     params.set('p', 'test123');
     params.set('t', '1');
+    params.set('c', countryCode);
     params.set('b', compactImages.prefix);
 
     compactImages.paths.forEach((path, index) => {
@@ -68,6 +72,7 @@ export default function CreateCard() {
 
       shortParams.set('p', 'test123');
       shortParams.set('t', '1');
+      shortParams.set('c', countryCode);
 
       shortenedUrls.forEach((shortUrl, index) => {
         shortParams.set(`i${index + 1}`, shortUrl);
@@ -90,6 +95,19 @@ export default function CreateCard() {
         }}
       >
         <Text style={globalStyles.title}>Create Card</Text>
+
+        <Picker
+          selectedValue={countryCode}
+          onValueChange={(value) => setCountryCode(value)}
+        >
+          {countries.map((country) => (
+            <Picker.Item
+              key={country.code}
+              label={country.name}
+              value={country.code}
+            />
+          ))}
+        </Picker>
 
         {imageUrls.map((url, index) => (
           <TextInput
