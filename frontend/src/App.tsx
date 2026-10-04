@@ -6,6 +6,7 @@ import Layout from "./layout/layout";
 import ProtectedRoute from "./authLogin/service/ProtectedRoute";
 import SkeletonGeneral from "./components/SkeletonGeneral";
 import Home from "./pages/Home";
+import PhotoViewer from "./pages/PhotoViewer";
 
 const CardViewer = lazy(() => import("./pages/CardViewer"));
 
@@ -28,6 +29,7 @@ function App() {
     <Routes>
 
       <Route path="/v" element={<CardViewer />} />
+      <Route path="/photo" element={<PhotoViewer />} />
 
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />

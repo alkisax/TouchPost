@@ -110,6 +110,17 @@ const CardViewer = () => {
             <RowsPhotoAlbum
               photos={photos}
               targetRowHeight={160}
+              onClick={({ photo }) => {
+                const params = new URLSearchParams();
+
+                params.set("src", photo.src);
+
+                if (cardData.countryCode) {
+                  params.set("c", cardData.countryCode);
+                }
+
+                window.location.href = `/photo?${params.toString()}`;
+              }}
             />
           </div>
         )}
