@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-Cx0BB4qO.js";var t=e(),n=()=>(0,t.jsx)(`div`,{children:`Info`});export{n as default};
