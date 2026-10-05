@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-Cx0BB4qO.js";import{t}from"./DeleteAccountButton-Bw0x_iG_.js";var n=e(),r=()=>(0,n.jsxs)(`div`,{children:[(0,n.jsx)(`h1`,{children:`USER PAGE`}),(0,n.jsx)(t,{})]});export{r as default};
