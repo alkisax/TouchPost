@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { RowsPhotoAlbum, type Photo } from "react-photo-album";
 import "react-photo-album/rows.css";
 import CountryCodeBg from "../components/CountryCodeBg";
+import ImageProtectionOverlay from "../components/images/ImageProtectionOverlay";
 
 type CardData = {
   password: string;
@@ -89,10 +90,22 @@ const CardViewer = () => {
     void loadPhotos();
   }, [cardData.images]);
 
+  const handlePhotoClick = (photo: Photo) => {
+    const params = new URLSearchParams();
+
+    params.set("src", photo.src);
+
+    if (cardData.countryCode) {
+      params.set("c", cardData.countryCode);
+    }
+
+    window.location.href = `${import.meta.env.BASE_URL}photo?${params.toString()}`;
+  };
+
   useEffect(() => {
     // Τα 3 arguments είναι: replaceState(state, unused, url)
     // εδω {}. "" και window.location.pathname κρατά μόνο το path.
-    // window.history.replaceState({}, "", window.location.pathname);
+    window.history.replaceState({}, "", window.location.pathname);
   }, []);
 
   return (
@@ -110,16 +123,14 @@ const CardViewer = () => {
             <RowsPhotoAlbum
               photos={photos}
               targetRowHeight={160}
-              onClick={({ photo }) => {
-                const params = new URLSearchParams();
-
-                params.set("src", photo.src);
-
-                if (cardData.countryCode) {
-                  params.set("c", cardData.countryCode);
-                }
-
-                window.location.href = `/photo?${params.toString()}`;
+              onClick={({ photo }) => handlePhotoClick(photo)}
+              componentsProps={{
+                button: {
+                  className: "relative",
+                },
+              }}
+              render={{
+                extras: () => <ImageProtectionOverlay />,
               }}
             />
           </div>

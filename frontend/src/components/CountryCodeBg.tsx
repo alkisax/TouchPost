@@ -11,8 +11,8 @@ const CountryCodeBg = ({ countryCode }: CountryCodeBgProps) => {
     <div
       className="fixed inset-0 z-0 h-screen w-screen bg-center bg-no-repeat"
       style={{
-        backgroundImage: `url(/countries/${countryCode}.jpeg)`,
-        backgroundSize: "cover",
+        backgroundImage: `url(${import.meta.env.BASE_URL}countries/${countryCode}.jpeg)`,
+        backgroundSize: "100% 100%",
       }}
     />
   );
