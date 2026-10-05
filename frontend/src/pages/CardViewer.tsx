@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { RowsPhotoAlbum, type Photo } from "react-photo-album";
 import "react-photo-album/rows.css";
 import CountryCodeBg from "../components/CountryCodeBg";
-import ImageProtectionOverlay from "../components/images/ImageProtectionOverlay";
 
 type CardData = {
   password: string;
@@ -125,12 +124,10 @@ const CardViewer = () => {
               targetRowHeight={160}
               onClick={({ photo }) => handlePhotoClick(photo)}
               componentsProps={{
-                button: {
-                  className: "relative",
+                image: {
+                  draggable: false,
+                  onContextMenu: (event) => event.preventDefault(),
                 },
-              }}
-              render={{
-                extras: () => <ImageProtectionOverlay />,
               }}
             />
           </div>
