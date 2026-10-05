@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import { ActivityIndicator, Pressable, Text } from 'react-native';
 
 type CountdownButtonProps = {
   label: string;
@@ -7,6 +7,9 @@ type CountdownButtonProps = {
   onPress: () => Promise<void>;
   buttonStyle?: object;
   textStyle?: object;
+  disabled?: boolean;
+  pressedStyle?: object;
+  disabledStyle?: object;
 };
 
 export default function CountdownButton({
@@ -15,6 +18,9 @@ export default function CountdownButton({
   onPress,
   buttonStyle,
   textStyle,
+  disabled = false,
+  pressedStyle,
+  disabledStyle,
 }: CountdownButtonProps) {
   const [countdown, setCountdown] = useState<number | null>(null);
 
@@ -46,10 +52,15 @@ export default function CountdownButton({
 
   return (
     <Pressable
-      style={buttonStyle}
+      style={({ pressed }) => [
+        buttonStyle,
+        pressed && pressedStyle,
+        (disabled || countdown !== null) && disabledStyle,
+      ]}
       onPress={() => void handlePress()}
-      disabled={countdown !== null}
+      disabled={disabled || countdown !== null}
     >
+      {countdown !== null && <ActivityIndicator size="small" color="#ffffff" />}
       <Text style={textStyle}>
         {countdown !== null ? `${countdown}s` : label}
       </Text>

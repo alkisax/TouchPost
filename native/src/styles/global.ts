@@ -192,6 +192,50 @@ export const createGlobalStyles = (colors: AppColors) =>
       alignItems: "center",
     },
 
+    pressedButton: {
+      opacity: 0.78,
+      transform: [{ scale: 0.98 }],
+    },
+
+    disabledButton: {
+      opacity: 0.55,
+    },
+
+    screenContent: {
+      padding: SPACING.md,
+      gap: SPACING.md,
+      paddingBottom: SPACING.xl,
+    },
+
+    section: {
+      gap: SPACING.sm,
+    },
+
+    sectionTitle: {
+      fontSize: FONT_SIZE.md,
+      fontWeight: "700",
+      color: colors.text,
+    },
+
+    buttonGroup: {
+      gap: SPACING.sm,
+    },
+
+    resultContainer: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: RADIUS.md,
+      padding: SPACING.md,
+      gap: SPACING.sm,
+    },
+
+    resultText: {
+      color: colors.text,
+      fontSize: FONT_SIZE.sm,
+      lineHeight: 20,
+    },
+
     // Active/selected κατάσταση για primary button.
     // Χρήσιμο όταν ένα βασικό κουμπί λειτουργεί σαν selected option.
     primaryButtonActive: {
@@ -292,6 +336,7 @@ export const createGlobalStyles = (colors: AppColors) =>
       borderRadius: 8,
       backgroundColor: colors.surfaceGlass,
       color: colors.text,
+      marginBottom: SPACING.sm,
     },
 
     link: {
