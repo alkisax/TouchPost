@@ -8,7 +8,6 @@ import { publicWebUrl } from '@/constants/constants';
 import CountryCodePicker from '@/components/CountryCodePicker';
 import { ThemeContext } from '@/context/ThemeContext';
 import { createGlobalStyles } from '@/styles/global';
-import { compactImageUrls, shortenImageUrls } from '@/utils/compactImageUrls';
 import CountdownButton from '@/components/CountdownButton';
 import { readNfc } from '@/utils/readNfc';
 import { writeNfcUrl } from '@/utils/writeNfc';
@@ -46,51 +45,132 @@ export default function CreateCard() {
   };
 
   const handleCreateUrl = async () => {
+    /*
+     * NFC213 constraints:
+     * - Όλες οι εικόνες πρέπει να είναι Cloudinary URLs.
+     * - Όλες οι εικόνες πρέπει να βρίσκονται στον ίδιο Cloudinary folder.
+     * - Ο folder πρέπει να έχει όνομα 1 ή 2 digits, π.χ. "1" ή "21".
+     * - Τα αρχεία πρέπει να ονομάζονται 1.jpg, 2.jpg, 3.jpg, 4.jpg, 5.jpg.
+     * - Δεν χρησιμοποιούμε p=test123.
+     * - Δεν χρησιμοποιούμε t=1.
+     * - Κρατάμε μόνο country, cloud name, folder και πλήθος εικόνων.
+     * - Το web viewer για το compact NFC213 format θα υλοποιηθεί αργότερα.
+     */
+
     if (isCreatingUrl) {
       return;
     }
 
     setIsCreatingUrl(true);
+
     try {
+      // Κρατάμε μόνο τα URLs που έχει συμπληρώσει πραγματικά ο user.
       const validUrls = imageUrls
         .map((url) => url.trim())
         .filter((url) => url !== '');
 
-      const compactImages = compactImageUrls(validUrls);
+      // Δεν μπορούμε να δημιουργήσουμε card χωρίς τουλάχιστον μία εικόνα.
+      if (validUrls.length === 0) {
+        const url = `${publicWebUrl}/n#${countryCode}`;
+        const finalUrlBytes = getUrlBytes(url);
 
-      const params = new URLSearchParams();
+        console.log('Base NFC213 URL:', url);
+        console.log('Base NFC213 URL bytes:', finalUrlBytes);
 
-      params.set('p', 'test123');
-      params.set('t', '1');
-      params.set('c', countryCode);
-      params.set('b', compactImages.prefix);
+        setGeneratedUrl(url);
+        setGeneratedUrlBytes(finalUrlBytes);
 
-      compactImages.paths.forEach((path, index) => {
-        params.set(`i${index + 1}`, path);
-      });
-
-      let url = `${publicWebUrl}/v?${params.toString()}`;
-      const urlBytes = new TextEncoder().encode(url).length;
-
-      if (urlBytes > 480) {
-        const shortenedUrls = await shortenImageUrls(validUrls);
-        const shortParams = new URLSearchParams();
-
-        shortParams.set('p', 'test123');
-        shortParams.set('t', '1');
-        shortParams.set('c', countryCode);
-
-        shortenedUrls.forEach((shortUrl, index) => {
-          shortParams.set(`i${index + 1}`, shortUrl);
-        });
-
-        url = `${publicWebUrl}/v?${shortParams.toString()}`;
+        return;
       }
 
-      console.log('Generated URL:', url);
-      console.log('Generated URL bytes:', getUrlBytes(url));
+      // Για το compact format αρκεί να αναλύσουμε το πρώτο URL,
+      // αφού όλες οι εικόνες πρέπει να είναι στον ίδιο Cloudinary folder.
+      const firstUrl = validUrls[0];
+
+      const cloudinaryPrefix = 'https://res.cloudinary.com/';
+      const uploadPart = '/image/upload/';
+
+      // Ελέγχουμε ότι πρόκειται πράγματι για Cloudinary URL.
+      if (!firstUrl.startsWith(cloudinaryPrefix)) {
+        throw new Error('NFC213 requires Cloudinary image URLs.');
+      }
+
+      // Αφαιρούμε το σταθερό https://res.cloudinary.com/
+      const withoutPrefix = firstUrl.slice(cloudinaryPrefix.length);
+
+      // Χωρίζουμε το URL σε:
+      // cloudName | υπόλοιπο path μετά το /image/upload/
+      const uploadParts = withoutPrefix.split(uploadPart);
+
+      if (uploadParts.length !== 2) {
+        throw new Error('Invalid Cloudinary image URL.');
+      }
+
+      const cloudName = uploadParts[0];
+      const imagePath = uploadParts[1];
+
+      // Παίρνουμε τα path segments.
+      // Παράδειγμα:
+      // v123456/21/1.jpg
+      // γίνεται:
+      // ["v123456", "21", "1.jpg"]
+      const pathParts = imagePath.split('/');
+
+      if (pathParts.length < 3) {
+        throw new Error('Cloudinary URL does not contain the expected folder.');
+      }
+
+      // Το τελευταίο segment είναι το filename.
+      const fileName = pathParts[pathParts.length - 1];
+
+      // Το αμέσως προηγούμενο segment είναι ο numeric folder.
+      const folder = pathParts[pathParts.length - 2];
+
+      // Ο folder πρέπει να είναι ακριβώς 1 ή 2 ψηφία.
+      if (!/^\d{1,2}$/.test(folder)) {
+        throw new Error('NFC213 folder must contain only 1 or 2 digits.');
+      }
+
+      // Το πρώτο αρχείο πρέπει να ακολουθεί το pattern 1.jpg - 5.jpg.
+      if (!/^[1-5]\.jpg$/i.test(fileName)) {
+        throw new Error('NFC213 images must be named 1.jpg to 5.jpg.');
+      }
+
+      // Κρατάμε και το Cloudinary version segment, π.χ. v123456,
+      // γιατί είναι μέρος του πραγματικού URL των εικόνων.
+      const version = pathParts[0];
+
+      // Το πλήθος των εικόνων μάς αρκεί για να ξέρει αργότερα το web
+      // ότι πρέπει να ζητήσει 1.jpg έως N.jpg.
+      const imageCount = validUrls.length;
+
+      // Compact NFC213 format:
+      //
+      // country | cloudName | version | folder | imageCount
+      //
+      // Παράδειγμα:
+      // GR|be726cds|v1791019|21|5
+      //
+      // Δεν χρησιμοποιούμε URLSearchParams για να αποφύγουμε extra χαρακτήρες
+      // όπως c=, i1= και URL encoding τύπου %2F.
+      const payload =
+        `${countryCode}` +
+        `|${cloudName}` +
+        `|${version}` +
+        `|${folder}` +
+        `|${imageCount}`;
+
+      // Χρησιμοποιούμε διαφορετικό route ώστε το web να ξέρει ότι
+      // πρόκειται για NFC213 compact payload και όχι για το κανονικό /v format.
+      const url = `${publicWebUrl}/n#${payload}`;
+
+      const finalUrlBytes = getUrlBytes(url);
+
+      console.log('Generated NFC213 URL:', url);
+      console.log('Generated NFC213 URL bytes:', finalUrlBytes);
+
       setGeneratedUrl(url);
-      setGeneratedUrlBytes(getUrlBytes(url));
+      setGeneratedUrlBytes(finalUrlBytes);
     } finally {
       setIsCreatingUrl(false);
     }
@@ -136,7 +216,7 @@ export default function CreateCard() {
   return (
     <SafeAreaView edges={['bottom']} style={globalStyles.screen}>
       <ScrollView contentContainerStyle={globalStyles.screenContent}>
-        <Text style={globalStyles.title}>Create Card!</Text>
+        <Text style={globalStyles.title}>Create Small Card!</Text>
 
         <View style={[globalStyles.card, globalStyles.section]}>
           <Text style={globalStyles.sectionTitle}>Card details</Text>

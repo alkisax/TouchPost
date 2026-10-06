@@ -137,6 +137,13 @@ export default function Index() {
         >
           <Text style={globalStyles.primaryButtonText}>Create Card</Text>
         </Pressable>
+
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => router.push('/nfc213')}
+        >
+          <Text style={globalStyles.primaryButtonText}>small nfc</Text>
+        </Pressable>
       </View>
 
       <View
