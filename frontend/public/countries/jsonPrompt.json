@@ -1,0 +1,9 @@
+{
+  "countryCode": "{{COUNTRY_CODE}}",
+  "countryName": "{{COUNTRY_NAME}}",
+  "landmarks": [],
+  "aspectRatio": "9:16",
+  "style": "vertical postcard-style watercolor background, soft pastel palette, elegant travel souvenir aesthetic, lightly vintage, airy and refined",
+  "prompt": "Create a vertical mobile background inspired by {{COUNTRY_NAME}}. The image should look like a decorative travel postcard background. Keep the center area large, bright, and mostly empty so that photos placed on top remain clearly visible. Push decorative content toward the edges and corners. Use a soft pastel background and a watercolor / illustrated postcard aesthetic. If landmarks are provided, use them as the main tourism references. If no landmarks are provided, choose automatically a few iconic and visually suitable tourism or cultural landmarks associated with {{COUNTRY_NAME}}. You may also include small cultural or botanical motifs that fit the country. Optionally include subtle postal details such as a postage stamp, postmark lines, or a faint mail seal near a corner. The final result should feel elegant, travel-themed, lightly vintage, and uncluttered in the middle. If no explicit landmarks are provided, infer them automatically from the country and choose visually recognizable, tourism-friendly elements.",
+  "negativePrompt": "crowded center, heavy text, busy middle area, dark heavy composition, modern UI elements, logos, clutter, collage look, harsh contrast"
+}

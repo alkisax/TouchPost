@@ -7,6 +7,7 @@ import ProtectedRoute from "./authLogin/service/ProtectedRoute";
 import SkeletonGeneral from "./components/SkeletonGeneral";
 import Home from "./pages/Home";
 import PhotoViewer from "./pages/PhotoViewer";
+import Nfc213Viewer from "./pages/Nfc213Viewer";
 
 const CardViewer = lazy(() => import("./pages/CardViewer"));
 
@@ -29,6 +30,7 @@ function App() {
     <Routes>
 
       <Route path="/v" element={<CardViewer />} />
+      <Route path="/n" element={<Nfc213Viewer />} />
       <Route path="/photo" element={<PhotoViewer />} />
 
       <Route element={<Layout />}>
