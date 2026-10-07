@@ -48,12 +48,20 @@ export default function CreateCard() {
     /*
      * NFC213 constraints:
      * - Όλες οι εικόνες πρέπει να είναι Cloudinary URLs.
-     * - Όλες οι εικόνες πρέπει να βρίσκονται στον ίδιο Cloudinary folder.
-     * - Ο folder πρέπει να έχει όνομα 1 ή 2 digits, π.χ. "1" ή "21".
-     * - Τα αρχεία πρέπει να ονομάζονται 1.jpg, 2.jpg, 3.jpg, 4.jpg, 5.jpg.
+     * - Όλες οι εικόνες μιας κάρτας ανήκουν στο ίδιο card id.
+     * - Το card id πρέπει να είναι 1 ή 2 digits, π.χ. "1" ή "21".
+     * - Τα public IDs των εικόνων πρέπει να έχουν μορφή:
+     *   cardId.1, cardId.2, cardId.3, cardId.4, cardId.5 ή cardId.b
+     * - Παράδειγμα για card id "2":
+     *   2.1.jpg, 2.2.jpg, 2.3.jpg, 2.4.jpg, 2.5.jpg, 2.b.jpg
      * - Δεν χρησιμοποιούμε p=test123.
      * - Δεν χρησιμοποιούμε t=1.
-     * - Κρατάμε μόνο country, cloud name, folder και πλήθος εικόνων.
+     * - Δεν αποθηκεύουμε Cloudinary version.
+     * - Δεν αποθηκεύουμε imageCount.
+     * - Το web viewer θα ελέγχει μόνος του ποια από τα
+     *   1, 2, 3, 4, 5, b υπάρχουν για το συγκεκριμένο card id.
+     * - Στο NFC κρατάμε μόνο:
+     *   country | cloudName | cardId
      * - Το web viewer για το compact NFC213 format θα υλοποιηθεί αργότερα.
      */
 
@@ -69,7 +77,8 @@ export default function CreateCard() {
         .map((url) => url.trim())
         .filter((url) => url !== '');
 
-      // Δεν μπορούμε να δημιουργήσουμε card χωρίς τουλάχιστον μία εικόνα.
+      // Προσωρινά επιτρέπουμε δημιουργία URL χωρίς εικόνα
+      // ώστε να μπορούμε να μετράμε το base NFC213 URL.
       if (validUrls.length === 0) {
         const url = `${publicWebUrl}/n#${countryCode}`;
         const finalUrlBytes = getUrlBytes(url);
@@ -83,23 +92,26 @@ export default function CreateCard() {
         return;
       }
 
-      // Για το compact format αρκεί να αναλύσουμε το πρώτο URL,
-      // αφού όλες οι εικόνες πρέπει να είναι στον ίδιο Cloudinary folder.
+      // Αρκεί να αναλύσουμε το πρώτο URL.
+      // Τα υπόλοιπα πρέπει να ακολουθούν το ίδιο cloudName και cardId convention.
       const firstUrl = validUrls[0];
 
       const cloudinaryPrefix = 'https://res.cloudinary.com/';
       const uploadPart = '/image/upload/';
 
-      // Ελέγχουμε ότι πρόκειται πράγματι για Cloudinary URL.
+      // Βασικός έλεγχος ότι το URL είναι Cloudinary delivery URL.
       if (!firstUrl.startsWith(cloudinaryPrefix)) {
         throw new Error('NFC213 requires Cloudinary image URLs.');
       }
 
-      // Αφαιρούμε το σταθερό https://res.cloudinary.com/
+      // Αφαιρούμε το σταθερό Cloudinary prefix.
+      // Παράδειγμα:
+      // https://res.cloudinary.com/be726cds/image/upload/v123/2.2.jpg
+      // ->
+      // be726cds/image/upload/v123/2.2.jpg
       const withoutPrefix = firstUrl.slice(cloudinaryPrefix.length);
 
-      // Χωρίζουμε το URL σε:
-      // cloudName | υπόλοιπο path μετά το /image/upload/
+      // Χωρίζουμε το cloud name από το image path.
       const uploadParts = withoutPrefix.split(uploadPart);
 
       if (uploadParts.length !== 2) {
@@ -109,59 +121,50 @@ export default function CreateCard() {
       const cloudName = uploadParts[0];
       const imagePath = uploadParts[1];
 
-      // Παίρνουμε τα path segments.
+      // Το τελευταίο path segment είναι το filename.
       // Παράδειγμα:
-      // v123456/21/1.jpg
-      // γίνεται:
-      // ["v123456", "21", "1.jpg"]
+      // v1791370199/2.2.jpg
+      // ->
+      // 2.2.jpg
       const pathParts = imagePath.split('/');
-
-      if (pathParts.length < 3) {
-        throw new Error('Cloudinary URL does not contain the expected folder.');
-      }
-
-      // Το τελευταίο segment είναι το filename.
       const fileName = pathParts[pathParts.length - 1];
 
-      // Το αμέσως προηγούμενο segment είναι ο numeric folder.
-      const folder = pathParts[pathParts.length - 2];
-
-      // Ο folder πρέπει να είναι ακριβώς 1 ή 2 ψηφία.
-      if (!/^\d{1,2}$/.test(folder)) {
-        throw new Error('NFC213 folder must contain only 1 or 2 digits.');
-      }
-
-      // Το πρώτο αρχείο πρέπει να ακολουθεί το pattern 1.jpg - 5.jpg.
-      if (!/^[1-5]\.jpg$/i.test(fileName)) {
-        throw new Error('NFC213 images must be named 1.jpg to 5.jpg.');
-      }
-
-      // Κρατάμε και το Cloudinary version segment, π.χ. v123456,
-      // γιατί είναι μέρος του πραγματικού URL των εικόνων.
-      const version = pathParts[0];
-
-      // Το πλήθος των εικόνων μάς αρκεί για να ξέρει αργότερα το web
-      // ότι πρέπει να ζητήσει 1.jpg έως N.jpg.
-      const imageCount = validUrls.length;
-
-      // Compact NFC213 format:
+      // Περιμένουμε filename τύπου:
+      // 2.1.jpg
+      // 2.5.jpg
+      // 2.b.jpg
       //
-      // country | cloudName | version | folder | imageCount
+      // Το πρώτο group είναι το cardId.
+      // Το δεύτερο group είναι image number 1-5 ή "b".
+      const fileNameMatch = fileName.match(/^(\d{1,2})\.([1-5]|b)\.jpg$/i);
+
+      if (!fileNameMatch) {
+        throw new Error(
+          'NFC213 image names must follow cardId.1.jpg to cardId.5.jpg or cardId.b.jpg.',
+        );
+      }
+
+      const cardId = fileNameMatch[1];
+
+      // Compact NFC213 payload:
+      //
+      // country | cloudName | cardId
       //
       // Παράδειγμα:
-      // GR|be726cds|v1791019|21|5
+      // GR|be726cds|2
       //
-      // Δεν χρησιμοποιούμε URLSearchParams για να αποφύγουμε extra χαρακτήρες
-      // όπως c=, i1= και URL encoding τύπου %2F.
+      // Δεν κρατάμε:
+      // - Cloudinary version
+      // - imageCount
+      // - filenames
+      // - full image URLs
       const payload =
         `${countryCode}` +
         `|${cloudName}` +
-        `|${version}` +
-        `|${folder}` +
-        `|${imageCount}`;
+        `|${cardId}`;
 
-      // Χρησιμοποιούμε διαφορετικό route ώστε το web να ξέρει ότι
-      // πρόκειται για NFC213 compact payload και όχι για το κανονικό /v format.
+      // Χρησιμοποιούμε διαφορετικό route (/n) ώστε αργότερα
+      // το web να ξέρει ότι πρόκειται για NFC213 compact payload.
       const url = `${publicWebUrl}/n#${payload}`;
 
       const finalUrlBytes = getUrlBytes(url);
