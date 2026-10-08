@@ -3,6 +3,7 @@
 import { useContext, useRef, useState } from 'react';
 
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -41,22 +42,49 @@ export default function CreatePostcardBack() {
   // Κάνει capture το postcard preview και το αποθηκεύει
   // στο photo library του κινητού ως JPEG.
   const handleDownloadJpeg = async () => {
+    console.log('Download JPEG pressed');
+
     if (!postcardRef.current) {
+      console.log('postcardRef is null');
+      Alert.alert('Error', 'Postcard preview is not available.');
       return;
     }
 
-    const permission = await MediaLibrary.requestPermissionsAsync();
+    try {
+      console.log('Requesting media permission...');
 
-    if (!permission.granted) {
-      return;
+      const permission = await MediaLibrary.requestPermissionsAsync();
+
+      console.log('Permission:', permission);
+
+      if (!permission.granted) {
+        console.log('Media permission denied');
+        Alert.alert('Permission required', 'Please allow access to your photos.');
+        return;
+      }
+
+      console.log('Starting capture...');
+
+      const uri = await captureRef(postcardRef.current, {
+        format: 'jpg',
+        quality: 1,
+      });
+
+      console.log('Captured JPEG:', uri);
+
+      await MediaLibrary.saveToLibraryAsync(uri);
+
+      console.log('JPEG saved successfully');
+
+      Alert.alert('Saved', 'Postcard saved to your photos.');
+    } catch (error) {
+      console.log('JPEG export error:', error);
+
+      Alert.alert(
+        'Error',
+        error instanceof Error ? error.message : String(error),
+      );
     }
-
-    const uri = await captureRef(postcardRef, {
-      format: 'jpg',
-      quality: 1,
-    });
-
-    await MediaLibrary.saveToLibraryAsync(uri);
   };
 
   return (
