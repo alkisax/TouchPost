@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { RowsPhotoAlbum, type Photo } from "react-photo-album";
 import "react-photo-album/rows.css";
 
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+
 import CountryCodeBg from "../components/CountryCodeBg";
 
 type Nfc213Data = {
@@ -132,10 +134,10 @@ const Nfc213Viewer = () => {
    *
    * Περνάμε και το countryCode ώστε να κρατήσει το ίδιο background.
    */
-  const handlePhotoClick = (photo: Photo) => {
+  const openPhoto = (src: string) => {
     const params = new URLSearchParams();
 
-    params.set("src", photo.src);
+    params.set("src", src);
 
     if (cardData.countryCode) {
       params.set("c", cardData.countryCode);
@@ -143,6 +145,10 @@ const Nfc213Viewer = () => {
 
     window.location.href =
       `${import.meta.env.BASE_URL}photo?${params.toString()}`;
+  };
+
+  const handlePhotoClick = (photo: Photo) => {
+    openPhoto(photo.src);
   };
 
   return (
@@ -161,12 +167,16 @@ const Nfc213Viewer = () => {
         )}
 
         {backImageUrl !== "" && (
-          <div className="mx-auto mt-8 flex w-[82%] max-w-md justify-center px-4 pb-8">
-            <img
-              src={backImageUrl}
-              alt="Back of postcard"
-              className="max-h-[80vh] max-w-full object-contain"
-            />
+          <div className="mx-auto mt-8 flex justify-center pb-8">
+            <button
+              type="button"
+              onClick={() => openPhoto(backImageUrl)}
+              className="flex cursor-pointer flex-col items-center gap-2"
+            >
+              <MailOutlineIcon sx={{ fontSize: 48 }} />
+
+              <span>View postcard back</span>
+            </button>
           </div>
         )}
       </main>
