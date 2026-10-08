@@ -1,4 +1,4 @@
-// native\src\app\create-card\index.tsx
+// native\src\app\nfc213\index.tsx
 import { useContext, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import CountdownButton from '@/components/CountdownButton';
 import { readNfc } from '@/utils/readNfc';
 import { writeNfcUrl } from '@/utils/writeNfc';
 import NfcCapacityInfo from '@/components/NfcCapacityInfo';
+import BackOfPostcardSvg from '@/components/BackOfPostcardSvg';
 
 export default function CreateCard() {
   const { colors } = useContext(ThemeContext);
@@ -309,6 +310,17 @@ export default function CreateCard() {
             <Text style={globalStyles.resultText}>{nfcResult}</Text>
           </View>
         )}
+
+        <BackOfPostcardSvg
+          address="Panepistimiou 10"
+          city="Athens"
+          country="Greece"
+          postalCode="10671"
+          from="Alkis"
+          sentFrom="Athens, Greece"
+          text="Greetings from Greece!"
+          width={350}
+        />
       </ScrollView>
     </SafeAreaView>
   );

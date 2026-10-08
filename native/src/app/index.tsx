@@ -129,21 +129,30 @@ export default function Index() {
   return (
     <SafeAreaView edges={['bottom']} style={globalStyles.screen}>
       <View style={globalStyles.centerContent}>
-        <Text style={globalStyles.title}>Hello World</Text>
+<View style={{ width: 240, gap: 12 }}>
+  <Pressable
+    style={globalStyles.primaryButton}
+    onPress={() => router.push('/create-card')}
+  >
+    <Text style={globalStyles.primaryButtonText}>Create Card</Text>
+  </Pressable>
 
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/create-card')}
-        >
-          <Text style={globalStyles.primaryButtonText}>Create Card</Text>
-        </Pressable>
+  <Pressable
+    style={globalStyles.primaryButton}
+    onPress={() => router.push('/nfc213')}
+  >
+    <Text style={globalStyles.primaryButtonText}>Small NFC</Text>
+  </Pressable>
 
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/nfc213')}
-        >
-          <Text style={globalStyles.primaryButtonText}>small nfc</Text>
-        </Pressable>
+  <Pressable
+    style={globalStyles.primaryButton}
+    onPress={() => router.push('/create-postcard-back')}
+  >
+    <Text style={globalStyles.primaryButtonText}>
+      Create Postcard Back
+    </Text>
+  </Pressable>
+</View>
       </View>
 
       <View
