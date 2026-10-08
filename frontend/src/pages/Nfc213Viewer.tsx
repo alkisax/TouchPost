@@ -3,8 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { RowsPhotoAlbum, type Photo } from "react-photo-album";
 import "react-photo-album/rows.css";
-
-import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
 import CountryCodeBg from "../components/CountryCodeBg";
 
 type Nfc213Data = {
@@ -166,15 +164,13 @@ const Nfc213Viewer = () => {
         )}
 
         {backImageUrl !== "" && (
-          <div className="mx-auto mt-8 flex justify-center pb-8">
+          <div className="mx-auto mt-6 flex justify-center pb-8">
             <button
               type="button"
               onClick={() => openPhoto(backImageUrl)}
-              className="flex cursor-pointer flex-col items-center gap-2"
+              className="cursor-pointer text-base font-medium text-stone-800 underline underline-offset-4"
             >
-              <MailOutlinedIcon sx={{ fontSize: 48 }} />
-
-              <span>View postcard back</span>
+              Read postcard
             </button>
           </div>
         )}
