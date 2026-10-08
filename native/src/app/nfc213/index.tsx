@@ -310,17 +310,6 @@ export default function CreateCard() {
             <Text style={globalStyles.resultText}>{nfcResult}</Text>
           </View>
         )}
-
-        <BackOfPostcardSvg
-          address="Panepistimiou 10"
-          city="Athens"
-          country="Greece"
-          postalCode="10671"
-          from="Alkis"
-          sentFrom="Athens, Greece"
-          text="Greetings from Greece!"
-          width={350}
-        />
       </ScrollView>
     </SafeAreaView>
   );
