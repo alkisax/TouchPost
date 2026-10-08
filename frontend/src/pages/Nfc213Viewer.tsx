@@ -4,8 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { RowsPhotoAlbum, type Photo } from "react-photo-album";
 import "react-photo-album/rows.css";
 
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-
+import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
 import CountryCodeBg from "../components/CountryCodeBg";
 
 type Nfc213Data = {
@@ -173,7 +172,7 @@ const Nfc213Viewer = () => {
               onClick={() => openPhoto(backImageUrl)}
               className="flex cursor-pointer flex-col items-center gap-2"
             >
-              <MailOutlineIcon sx={{ fontSize: 48 }} />
+              <MailOutlinedIcon sx={{ fontSize: 48 }} />
 
               <span>View postcard back</span>
             </button>
