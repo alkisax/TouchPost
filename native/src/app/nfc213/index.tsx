@@ -12,7 +12,7 @@ import CountdownButton from '@/components/CountdownButton';
 import { readNfc } from '@/utils/readNfc';
 import { writeNfcUrl } from '@/utils/writeNfc';
 import NfcCapacityInfo from '@/components/NfcCapacityInfo';
-import BackOfPostcardSvg from '@/components/BackOfPostcardSvg';
+// import BackOfPostcardSvg from '@/components/BackOfPostcardSvg';
 
 export default function CreateCard() {
   const { colors } = useContext(ThemeContext);
