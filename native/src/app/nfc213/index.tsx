@@ -12,6 +12,7 @@ import CountdownButton from '@/components/CountdownButton';
 import { readNfc } from '@/utils/readNfc';
 import { writeNfcUrl } from '@/utils/writeNfc';
 import NfcCapacityInfo from '@/components/NfcCapacityInfo';
+import Nfc213Instructions from '@/components/Nfc213Instructions';
 // import BackOfPostcardSvg from '@/components/BackOfPostcardSvg';
 
 export default function CreateCard() {
@@ -221,6 +222,8 @@ export default function CreateCard() {
     <SafeAreaView edges={['bottom']} style={globalStyles.screen}>
       <ScrollView contentContainerStyle={globalStyles.screenContent}>
         <Text style={globalStyles.title}>Create Small Card!</Text>
+
+        <Nfc213Instructions />
 
         <View style={[globalStyles.card, globalStyles.section]}>
           <Text style={globalStyles.sectionTitle}>Card details</Text>
