@@ -118,10 +118,10 @@ const CardViewer = () => {
       <CountryCodeBg countryCode={cardData.countryCode} />
 
       <main className={`relative z-10 ${selectedTheme.className}`}>
-        <h1>TouchPost</h1>
+        {/* <h1>TouchPost</h1>
 
         <p>Theme: {cardData.theme}</p>
-        <p>Password: {cardData.password}</p>
+        <p>Password: {cardData.password}</p> */}
 
         {photos.length > 0 && (
           <div className="mx-auto w-[82%] max-w-md px-4 py-6">
