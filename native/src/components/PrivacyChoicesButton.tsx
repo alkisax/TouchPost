@@ -1,39 +1,25 @@
-import { Pressable, Text } from 'react-native'
-import {
-  AdsConsentPrivacyOptionsRequirementStatus,
-} from 'react-native-google-mobile-ads'
+import { useContext } from 'react';
+import { Pressable, Text } from 'react-native';
 
-import { useAdConsent } from '@/ads/AdConsentContext'
-import { createGlobalStyles } from '@/styles/global'
-import { ThemeContext } from '@/context/ThemeContext'
-import { useContext } from 'react'
+import { useAdConsent } from '@/ads/AdConsentContext';
+import { ThemeContext } from '@/context/ThemeContext';
+import { createGlobalStyles } from '@/styles/global';
 
-const PrivacyChoicesButton = () => {
-  const { colors } = useContext(ThemeContext)
-  const globalStyles = createGlobalStyles(colors)
+export default function PrivacyChoicesButton() {
+  const { colors } = useContext(ThemeContext);
+  const globalStyles = createGlobalStyles(colors);
+  const { privacyOptionsRequired, showPrivacyOptions } = useAdConsent();
 
-  const {
-    privacyOptionsRequirementStatus,
-    showPrivacyOptionsForm,
-  } = useAdConsent()
-
-  if (
-    privacyOptionsRequirementStatus !==
-    AdsConsentPrivacyOptionsRequirementStatus.REQUIRED
-  ) {
-    return null
+  if (!privacyOptionsRequired) {
+    return null;
   }
 
   return (
     <Pressable
       style={globalStyles.secondaryButton}
-      onPress={() => void showPrivacyOptionsForm()}
+      onPress={() => void showPrivacyOptions()}
     >
-      <Text style={globalStyles.secondaryButtonText}>
-        Privacy choices
-      </Text>
+      <Text style={globalStyles.secondaryButtonText}>Privacy choices</Text>
     </Pressable>
-  )
+  );
 }
-
-export default PrivacyChoicesButton

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemeContext } from '@/context/ThemeContext';
 import { createGlobalStyles, SPACING } from '@/styles/global';
+import PrivacyChoicesButton from '@/components/PrivacyChoicesButton';
 
 export default function Terms() {
   const { colors } = useContext(ThemeContext);
@@ -66,6 +67,8 @@ export default function Terms() {
             Advertising providers may process information according to their
             own privacy policies and consent requirements.
           </Text>
+
+          <PrivacyChoicesButton />
 
           <Text style={[globalStyles.text, { marginTop: SPACING.md }]}>
             TouchPost does not sell uploaded photos and does not provide the

@@ -5,14 +5,23 @@ import {
   RewardedAdEventType,
 } from 'react-native-google-mobile-ads';
 import { rewardedAdUnitId } from '@/constants/constants';
+import { useAdConsent } from '@/ads/AdConsentContext';
 
 export function useRewardedAd() {
   const adRef = useRef<RewardedAd | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isShowing, setIsShowing] = useState(false);
   const [error, setError] = useState(false);
+  const { canRequestAds } = useAdConsent();
 
   useEffect(() => {
+    if (!canRequestAds) {
+      adRef.current = null;
+      setIsLoaded(false);
+      setIsShowing(false);
+      return;
+    }
+
     const ad = RewardedAd.createForAdRequest(rewardedAdUnitId);
     adRef.current = ad;
 
@@ -49,10 +58,10 @@ export function useRewardedAd() {
       unsubscribeError();
       adRef.current = null;
     };
-  }, []);
+  }, [canRequestAds]);
 
   const showAd = () => {
-    if (!isLoaded || !adRef.current) {
+    if (!canRequestAds || !isLoaded || !adRef.current) {
       return;
     }
 
@@ -67,6 +76,7 @@ export function useRewardedAd() {
 
   return {
     error,
+    canRequestAds,
     isLoaded,
     isShowing,
     showAd,

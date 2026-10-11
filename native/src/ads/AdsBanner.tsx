@@ -4,8 +4,15 @@ import {
   BannerAdSize,
 } from 'react-native-google-mobile-ads';
 import { bannerAdUnitId } from '@/constants/constants';
+import { useAdConsent } from '@/ads/AdConsentContext';
 
 const AdsBanner = () => {
+  const { canRequestAds } = useAdConsent();
+
+  if (!canRequestAds) {
+    return null;
+  }
+
   return (
     <View style={{ alignItems: 'center', width: '100%' }}>
       <BannerAd

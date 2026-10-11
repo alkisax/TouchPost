@@ -1,6 +1,7 @@
 // native/src/app/_layout.tsx
 
 import { ThemeProvider } from "@/context/ThemeContext";
+import { AdConsentProvider } from "@/ads/AdConsentContext";
 import Navbar from "@/layout/Navbar";
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -29,12 +30,14 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <Navbar />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        />
+        <AdConsentProvider>
+          <Navbar />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          />
+        </AdConsentProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

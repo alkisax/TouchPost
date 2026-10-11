@@ -1,88 +1,97 @@
-import {
+import mobileAds, {
   AdsConsent,
-  AdsConsentInfo,
   AdsConsentPrivacyOptionsRequirementStatus,
 } from 'react-native-google-mobile-ads';
-import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 
 type AdConsentContextValue = {
-  consentResolved: boolean;
+  isLoading: boolean;
   canRequestAds: boolean;
-  privacyOptionsRequirementStatus: AdsConsentPrivacyOptionsRequirementStatus;
-  showPrivacyOptionsForm: () => Promise<void>;
+  privacyOptionsRequired: boolean;
+  showPrivacyOptions: () => Promise<void>;
 };
 
 const AdConsentContext = createContext<AdConsentContextValue | undefined>(
   undefined,
 );
 
-type AdConsentProviderProps = {
-  children: ReactNode;
-};
-
-export const AdConsentProvider = ({ children }: AdConsentProviderProps) => {
-  const [consentResolved, setConsentResolved] = useState(false);
+export function AdConsentProvider({ children }: { children: ReactNode }) {
+  const [isLoading, setIsLoading] = useState(true);
   const [canRequestAds, setCanRequestAds] = useState(false);
-  const [privacyOptionsRequirementStatus, setPrivacyOptionsRequirementStatus] =
-    useState(AdsConsentPrivacyOptionsRequirementStatus.UNKNOWN);
+  const [privacyOptionsRequired, setPrivacyOptionsRequired] = useState(false);
+  const mobileAdsInitialized = useRef(false);
 
-  const applyConsentInfo = useCallback((consentInfo: AdsConsentInfo) => {
-    setCanRequestAds(consentInfo.canRequestAds === true);
-    setPrivacyOptionsRequirementStatus(
-      consentInfo.privacyOptionsRequirementStatus,
+  const applyConsentInfo = useCallback((consentInfo: Awaited<ReturnType<typeof AdsConsent.getConsentInfo>>) => {
+    setCanRequestAds(consentInfo.canRequestAds);
+    setPrivacyOptionsRequired(
+      consentInfo.privacyOptionsRequirementStatus ===
+        AdsConsentPrivacyOptionsRequirementStatus.REQUIRED,
     );
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
 
-    const resolveConsent = async () => {
+    const initializeConsent = async () => {
       try {
-        await AdsConsent.requestInfoUpdate();
-        await AdsConsent.loadAndShowConsentFormIfRequired();
-        const consentInfo = await AdsConsent.getConsentInfo();
-
-        if (!isMounted) return;
-
-        applyConsentInfo(consentInfo);
-        setConsentResolved(true);
-      } catch {
-        if (!isMounted) return;
-
-        setCanRequestAds(false);
-        setConsentResolved(false);
+        const consentInfo = await AdsConsent.gatherConsent();
+        if (mounted) {
+          applyConsentInfo(consentInfo);
+        }
+        if (consentInfo.canRequestAds && !mobileAdsInitialized.current) {
+          mobileAdsInitialized.current = true;
+          await mobileAds().initialize();
+        }
+      } catch (error) {
+        console.warn('[AdMob] Consent gathering failed', error);
+        if (mounted) {
+          setCanRequestAds(false);
+          setPrivacyOptionsRequired(false);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
-    void resolveConsent();
+    void initializeConsent();
 
     return () => {
-      isMounted = false;
+      mounted = false;
     };
   }, [applyConsentInfo]);
 
-  const showPrivacyOptionsForm = useCallback(async () => {
+  const showPrivacyOptions = useCallback(async () => {
     try {
       const consentInfo = await AdsConsent.showPrivacyOptionsForm();
       applyConsentInfo(consentInfo);
-    } catch {
-      setCanRequestAds(false);
+      if (consentInfo.canRequestAds && !mobileAdsInitialized.current) {
+        mobileAdsInitialized.current = true;
+        await mobileAds().initialize();
+      }
+    } catch (error) {
+      console.warn('[AdMob] Privacy options form could not be opened', error);
     }
   }, [applyConsentInfo]);
 
   const value = useMemo(
     () => ({
-      consentResolved,
+      isLoading,
       canRequestAds,
-      privacyOptionsRequirementStatus,
-      showPrivacyOptionsForm,
+      privacyOptionsRequired,
+      showPrivacyOptions,
     }),
-    [
-      canRequestAds,
-      consentResolved,
-      privacyOptionsRequirementStatus,
-      showPrivacyOptionsForm,
-    ],
+    [isLoading, canRequestAds, privacyOptionsRequired, showPrivacyOptions],
   );
 
   return (
@@ -90,14 +99,12 @@ export const AdConsentProvider = ({ children }: AdConsentProviderProps) => {
       {children}
     </AdConsentContext.Provider>
   );
-};
+}
 
-export const useAdConsent = () => {
+export function useAdConsent() {
   const context = useContext(AdConsentContext);
-
   if (!context) {
     throw new Error('useAdConsent must be used within AdConsentProvider');
   }
-
   return context;
-};
+}
