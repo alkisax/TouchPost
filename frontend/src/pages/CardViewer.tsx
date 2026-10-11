@@ -10,6 +10,7 @@ type CardData = {
   theme: number;
   countryCode?: string;
   images: string[];
+  postcardBackUrl?: string;
 };
 
 type ThemeConfig = {
@@ -44,6 +45,7 @@ const CardViewer = () => {
       password: params.get("p") ?? "",
       theme: Number(params.get("t") ?? 0),
       countryCode: params.get("c") || undefined,
+      postcardBackUrl: params.get("pb") || undefined,
       images: [
         params.get("i1"),
         params.get("i2"),
@@ -89,16 +91,20 @@ const CardViewer = () => {
     void loadPhotos();
   }, [cardData.images]);
 
-  const handlePhotoClick = (photo: Photo) => {
+  const openPhoto = (src: string) => {
     const params = new URLSearchParams();
 
-    params.set("src", photo.src);
+    params.set("src", src);
 
     if (cardData.countryCode) {
       params.set("c", cardData.countryCode);
     }
 
     window.location.href = `${import.meta.env.BASE_URL}photo?${params.toString()}`;
+  };
+
+  const handlePhotoClick = (photo: Photo) => {
+    openPhoto(photo.src);
   };
 
   useEffect(() => {
@@ -111,7 +117,7 @@ const CardViewer = () => {
     <>
       <CountryCodeBg countryCode={cardData.countryCode} />
 
-      <main className={selectedTheme.className}>
+      <main className={`relative z-10 ${selectedTheme.className}`}>
         <h1>TouchPost</h1>
 
         <p>Theme: {cardData.theme}</p>
@@ -130,6 +136,18 @@ const CardViewer = () => {
                 },
               }}
             />
+          </div>
+        )}
+
+        {cardData.postcardBackUrl && (
+          <div className="mx-auto mt-6 flex justify-center pb-8">
+            <button
+              type="button"
+              onClick={() => openPhoto(cardData.postcardBackUrl!)}
+              className="cursor-pointer rounded-md bg-white/70 px-4 py-2 font-medium text-stone-800"
+            >
+              Read postcard
+            </button>
           </div>
         )}
       </main>

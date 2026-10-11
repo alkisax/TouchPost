@@ -19,6 +19,7 @@ export default function CreateCard() {
   const globalStyles = createGlobalStyles(colors);
 
   const [imageUrls, setImageUrls] = useState(['', '', '', '', '']);
+  const [postcardBackUrl, setPostcardBackUrl] = useState('');
   const [countryCode, setCountryCode] = useState('GR');
   const [generatedUrl, setGeneratedUrl] = useState('');
   const [generatedUrlBytes, setGeneratedUrlBytes] = useState(0);
@@ -51,10 +52,13 @@ export default function CreateCard() {
     }
 
     setIsCreatingUrl(true);
+
     try {
       const validUrls = imageUrls
         .map((url) => url.trim())
         .filter((url) => url !== '');
+
+      const trimmedPostcardBackUrl = postcardBackUrl.trim();
 
       const compactImages = compactImageUrls(validUrls);
 
@@ -63,17 +67,25 @@ export default function CreateCard() {
       params.set('p', 'test123');
       params.set('t', '1');
       params.set('c', countryCode);
-      params.set('b', compactImages.prefix);
+
+      if (compactImages.prefix !== '') {
+        params.set('b', compactImages.prefix);
+      }
 
       compactImages.paths.forEach((path, index) => {
         params.set(`i${index + 1}`, path);
       });
+
+      if (trimmedPostcardBackUrl !== '') {
+        params.set('pb', trimmedPostcardBackUrl);
+      }
 
       let url = `${publicWebUrl}/v?${params.toString()}`;
       const urlBytes = new TextEncoder().encode(url).length;
 
       if (urlBytes > 480) {
         const shortenedUrls = await shortenImageUrls(validUrls);
+
         const shortParams = new URLSearchParams();
 
         shortParams.set('p', 'test123');
@@ -84,18 +96,23 @@ export default function CreateCard() {
           shortParams.set(`i${index + 1}`, shortUrl);
         });
 
+        if (trimmedPostcardBackUrl !== '') {
+          const [shortenedBackUrl] = await shortenImageUrls([trimmedPostcardBackUrl]);
+          shortParams.set('pb', shortenedBackUrl);
+        }
+
         url = `${publicWebUrl}/v?${shortParams.toString()}`;
       }
 
       console.log('Generated URL:', url);
       console.log('Generated URL bytes:', getUrlBytes(url));
+
       setGeneratedUrl(url);
       setGeneratedUrlBytes(getUrlBytes(url));
     } finally {
       setIsCreatingUrl(false);
     }
   };
-
   const handleReadNfc = async () => {
     if (isNfcBusy) {
       return;
@@ -156,6 +173,16 @@ export default function CreateCard() {
               style={globalStyles.input}
             />
           ))}
+
+          <TextInput
+            value={postcardBackUrl}
+            onChangeText={setPostcardBackUrl}
+            placeholder="Postcard back URL (optional)"
+            placeholderTextColor={colors.textSecondary}
+            autoCapitalize="none"
+            autoCorrect={false}
+            style={globalStyles.input}
+          />
         </View>
 
         <CountdownButton
@@ -178,7 +205,7 @@ export default function CreateCard() {
             {generatedUrl !== '' && (
               <NfcCapacityInfo
                 usedBytes={generatedUrlBytes}
-                maxBytes={137}
+                maxBytes={492}
               />
             )}
 

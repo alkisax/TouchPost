@@ -32,4 +32,8 @@ export const countries = [
     code: "TR",
     name: "Turkiye",
   },
+  {
+    code: "IT",
+    name: "Italy",
+  },
 ];
