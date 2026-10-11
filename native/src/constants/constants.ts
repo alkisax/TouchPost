@@ -6,10 +6,17 @@ export const backendUrl =
 export const publicWebUrl =
   process.env.EXPO_PUBLIC_WEB_URL ?? "https://alkisax.github.io/TouchPost";
 
-export const appName = "touchPost";
+export const appName = "TouchPost";
 
-export const bannerAdUnitId = "ca-app-pub-change later";
-export const interstitialAdUnitId = "ca-app-pub-change later";
+// official ad ids
+// export const bannerAdUnitId = 'ca-app-pub-4041382605494077/9737097595';
+// export const rewardedAdUnitId = 'ca-app-pub-4041382605494077/2956156117';
+
+// test ad ids
+export const bannerAdUnitId =
+  'ca-app-pub-3940256099942544/6300978111';
+export const rewardedAdUnitId =
+  'ca-app-pub-3940256099942544/5224354917';
 
 export const countries = [
   {

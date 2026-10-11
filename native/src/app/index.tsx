@@ -1,225 +1,107 @@
 // native\src\app\index.tsx
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useContext, useEffect, useState } from 'react';
-import { router } from 'expo-router';
-import { Text, View, Pressable } from 'react-native';
+import { useContext } from 'react';
+import { router, type Href } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AxiosError } from 'axios';
-
-import MockAdBanner from '@/ads/MockAdBanner';
-import MockInterstitialAd from '@/ads/MockInterstitialAd';
-import SupportDeveloperAdButton from '@/ads/SupportDeveloperAdButton';
-import { UserAuthContext } from '@/authLogin/context/UserAuthContext';
-import { getEffectiveRole } from '@/authLogin/types/types';
-import { api } from '@/authLogin/services/api';
-import { backendUrl } from '@/constants/constants';
+import AdsBanner from '@/ads/AdsBanner';
 import { ThemeContext } from '@/context/ThemeContext';
 import { createGlobalStyles, SPACING } from '@/styles/global';
-
-type MonetizationStatus = {
-  hasPaid: boolean;
-  adFreeUntil: string | null;
-};
-
-type MonetizationResponse = {
-  status: boolean;
-  data: MonetizationStatus;
-};
+import { useRewardedAd } from '@/ads/useRewardedAd';
 
 export default function Index() {
   const { colors } = useContext(ThemeContext);
-  const { user } = useContext(UserAuthContext);
   const globalStyles = createGlobalStyles(colors);
-  const [isMockInterstitialVisible, setMockInterstitialVisible] = useState(
-    false,
-  );
-  const [monetizationStatus, setMonetizationStatus] =
-    useState<MonetizationStatus | null>(null);
-  const [monetizationLoading, setMonetizationLoading] = useState(false);
-  const [monetizationError, setMonetizationError] = useState<string | null>(
-    null,
-  );
-  const [adGranting, setAdGranting] = useState(false);
-
-  const isTenantRole =
-    user && ['ADMIN', 'STAFF'].includes(getEffectiveRole(user));
-
-  useEffect(() => {
-    if (!isTenantRole) {
-      setMonetizationStatus(null);
-      setMonetizationError(null);
-      setMonetizationLoading(false);
-      return;
-    }
-
-    let active = true;
-
-    const loadMonetizationStatus = async () => {
-      setMonetizationLoading(true);
-      setMonetizationError(null);
-
-      try {
-        const token = await AsyncStorage.getItem('token');
-        const response = await api.get<MonetizationResponse>(
-          `${backendUrl}/company-users/mine/ad-status`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-
-        if (active) {
-          setMonetizationStatus(response.data.data);
-        }
-      } catch (error: unknown) {
-        if (active) {
-          setMonetizationError(getRequestError(error));
-          setMonetizationStatus(null);
-        }
-      } finally {
-        if (active) {
-          setMonetizationLoading(false);
-        }
-      }
-    };
-
-    void loadMonetizationStatus();
-
-    return () => {
-      active = false;
-    };
-  }, [isTenantRole]);
-
-  const hasActiveAdFreePeriod = Boolean(
-    monetizationStatus?.adFreeUntil &&
-    new Date(monetizationStatus.adFreeUntil).getTime() > Date.now(),
-  );
-  const shouldShowAds = Boolean(
-    isTenantRole &&
-    monetizationStatus &&
-    !monetizationStatus.hasPaid &&
-    !hasActiveAdFreePeriod,
-  );
-
-  const handleMockAdCompleted = async () => {
-    if (!user || !isTenantRole) {
-      setMockInterstitialVisible(false);
-      return;
-    }
-
-    setAdGranting(true);
-    setMonetizationError(null);
-
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const response = await api.post<MonetizationResponse>(
-        `${backendUrl}/company-users/mine/ad-free`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-
-      setMonetizationStatus(response.data.data);
-      setMockInterstitialVisible(false);
-    } catch (error: unknown) {
-      setMonetizationError(getRequestError(error));
-      setMockInterstitialVisible(false);
-    } finally {
-      setAdGranting(false);
-    }
-  };
+  const { error, isLoaded, isShowing, showAd } = useRewardedAd();
 
   return (
     <SafeAreaView edges={['bottom']} style={globalStyles.screen}>
-      <View style={globalStyles.centerContent}>
-<View style={{ width: 240, gap: 12 }}>
-  <Pressable
-    style={globalStyles.primaryButton}
-    onPress={() => router.push('/create-card')}
-  >
-    <Text style={globalStyles.primaryButtonText}>Create Card</Text>
-  </Pressable>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={globalStyles.centerContent}>
+          <View style={styles.mainActions}>
+          <Pressable
+            style={globalStyles.primaryButton}
+            onPress={() => router.push('/create-card')}
+          >
+            <Text style={globalStyles.primaryButtonText}>Create Card</Text>
+          </Pressable>
 
-  <Pressable
-    style={globalStyles.primaryButton}
-    onPress={() => router.push('/nfc213')}
-  >
-    <Text style={globalStyles.primaryButtonText}>Small NFC</Text>
-  </Pressable>
+          <Pressable
+            style={globalStyles.primaryButton}
+            onPress={() => router.push('/nfc213')}
+          >
+            <Text style={globalStyles.primaryButtonText}>Small NFC</Text>
+          </Pressable>
 
-  <Pressable
-    style={globalStyles.primaryButton}
-    onPress={() => router.push('/create-postcard-back')}
-  >
-    <Text style={globalStyles.primaryButtonText}>
-      Create Postcard Back
-    </Text>
-  </Pressable>
-</View>
-      </View>
+          <Pressable
+            style={globalStyles.primaryButton}
+            onPress={() => router.push('/create-postcard-back')}
+          >
+            <Text style={globalStyles.primaryButtonText}>
+              Create Postcard Back
+            </Text>
+          </Pressable>
+          </View>
 
-      <View
-        style={{
-          alignItems: 'center',
-          paddingHorizontal: SPACING.md,
-        }}
-      >
-        {shouldShowAds && !adGranting && (
-          <SupportDeveloperAdButton
-            onPress={() => setMockInterstitialVisible(true)}
-          />
-        )}
-        <Text
-          style={[
-            globalStyles.dimText,
-            {
-              marginBottom: SPACING.xs,
-              marginTop: SPACING.xs,
-              textAlign: 'center',
-            },
-          ]}
-        >
-          {monetizationLoading
-            ? 'Monetization status: loading...'
-            : monetizationStatus
-              ? `Has paid: ${monetizationStatus.hasPaid ? 'Y' : 'N'} | Ad free until: ${formatDateTime(
-                monetizationStatus.adFreeUntil,
-              )}`
-              : 'Has paid: - | Ad free until: -'}
-        </Text>
-        {monetizationError && (
-          <Text style={globalStyles.error}>{monetizationError}</Text>
-        )}
-        {shouldShowAds && !adGranting && <MockAdBanner />}
-      </View>
+          <Pressable
+            disabled={!isLoaded || isShowing}
+            onPress={showAd}
+            style={[
+              globalStyles.secondaryButton,
+              styles.supportButton,
+              (!isLoaded || isShowing) && globalStyles.disabledButton,
+            ]}
+          >
+            <Text style={globalStyles.secondaryButtonText}>
+              Watch an ad to support dev
+            </Text>
+          </Pressable>
 
-      <MockInterstitialAd
-        onCompleted={() => void handleMockAdCompleted()}
-        visible={isMockInterstitialVisible}
-      />
+          {!isLoaded && !error && !isShowing && (
+            <Text style={globalStyles.dimText}>Loading ad...</Text>
+          )}
+          {isShowing && (
+            <Text style={globalStyles.dimText}>Showing ad...</Text>
+          )}
+          {error && (
+            <Text style={globalStyles.error}>
+              The support ad is unavailable right now.
+            </Text>
+          )}
+
+          <View style={styles.bannerContainer}>
+            <AdsBanner />
+          </View>
+
+          <Pressable
+            onPress={() => router.push('/terms' as Href)}
+            style={styles.termsLink}
+          >
+            <Text style={[globalStyles.dimText, { color: colors.primary }]}>Terms</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-const formatDateTime = (value: string | null) => {
-  if (!value) {
-    return '-';
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime()) || date.getTime() <= Date.now()) {
-    return '-';
-  }
-
-  const pad = (part: number) => String(part).padStart(2, '0');
-
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(
-    date.getHours(),
-  )}:${pad(date.getMinutes())}`;
-};
-
-const getRequestError = (error: unknown) => {
-  if (error instanceof AxiosError && error.response?.data?.message) {
-    return error.response.data.message;
-  }
-
-  return 'Unable to load monetization status.';
-};
+const styles = StyleSheet.create({
+  content: {
+    flexGrow: 1,
+  },
+  mainActions: {
+    gap: SPACING.sm,
+    width: 240,
+  },
+  supportButton: {
+    marginTop: SPACING.lg,
+  },
+  bannerContainer: {
+    marginTop: SPACING.lg,
+    width: '100%',
+  },
+  termsLink: {
+    marginTop: SPACING.md,
+    padding: SPACING.xs,
+  },
+});
