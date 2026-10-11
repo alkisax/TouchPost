@@ -69,16 +69,16 @@ export default function Index() {
             </Text>
           )}
 
-          <View style={styles.bannerContainer}>
-            <AdsBanner />
-          </View>
-
           <Pressable
             onPress={() => router.push('/terms' as Href)}
             style={styles.termsLink}
           >
             <Text style={[globalStyles.dimText, { color: colors.primary }]}>Terms</Text>
           </Pressable>
+
+          <View style={styles.bannerContainer}>
+            <AdsBanner />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
