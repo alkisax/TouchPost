@@ -1,6 +1,14 @@
 // native\src\app\create-card\index.tsx
+
 import { useContext, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 
@@ -8,7 +16,10 @@ import { publicWebUrl } from '@/constants/constants';
 import CountryCodePicker from '@/components/CountryCodePicker';
 import { ThemeContext } from '@/context/ThemeContext';
 import { createGlobalStyles } from '@/styles/global';
-import { compactImageUrls, shortenImageUrls } from '@/utils/compactImageUrls';
+import {
+  compactImageUrls,
+  shortenImageUrls,
+} from '@/utils/compactImageUrls';
 import CountdownButton from '@/components/CountdownButton';
 import { readNfc } from '@/utils/readNfc';
 import { writeNfcUrl } from '@/utils/writeNfc';
@@ -97,7 +108,10 @@ export default function CreateCard() {
         });
 
         if (trimmedPostcardBackUrl !== '') {
-          const [shortenedBackUrl] = await shortenImageUrls([trimmedPostcardBackUrl]);
+          const [shortenedBackUrl] = await shortenImageUrls([
+            trimmedPostcardBackUrl,
+          ]);
+
           shortParams.set('pb', shortenedBackUrl);
         }
 
@@ -113,14 +127,17 @@ export default function CreateCard() {
       setIsCreatingUrl(false);
     }
   };
+
   const handleReadNfc = async () => {
     if (isNfcBusy) {
       return;
     }
 
     setIsNfcBusy(true);
+
     try {
       const tag = await readNfc();
+
       setNfcResult(JSON.stringify(tag, null, 2));
     } catch (error) {
       setNfcResult(String(error));
@@ -134,11 +151,25 @@ export default function CreateCard() {
       return;
     }
 
+    // Debug info πριν ξεκινήσει το πραγματικό NFC write.
+    console.log('Write NFC pressed');
+    console.log('Generated URL:', generatedUrl);
+    console.log('Generated URL bytes:', generatedUrlBytes);
+
     setIsNfcBusy(true);
+
     try {
+      // Το πραγματικό NDEF encoding και write γίνεται μέσα στο writeNfcUrl.
       await writeNfcUrl(generatedUrl);
+
+      console.log('Write completed');
+
       setNfcResult('NFC written successfully');
     } catch (error) {
+      // Αν αποτύχει το write, θέλουμε να δούμε το πραγματικό error
+      // τόσο στο console όσο και στο NFC result της οθόνης.
+      console.log('Write failed:', error);
+
       setNfcResult(String(error));
     } finally {
       setIsNfcBusy(false);
@@ -157,10 +188,12 @@ export default function CreateCard() {
 
         <View style={[globalStyles.card, globalStyles.section]}>
           <Text style={globalStyles.sectionTitle}>Card details</Text>
+
           <CountryCodePicker
             countryCode={countryCode}
             onChange={setCountryCode}
           />
+
           {imageUrls.map((url, index) => (
             <TextInput
               key={index}
@@ -198,8 +231,13 @@ export default function CreateCard() {
         {generatedUrl !== '' && (
           <>
             <View style={globalStyles.resultContainer}>
-              <Text style={globalStyles.sectionTitle}>Generated URL ({generatedUrlBytes} bytes)</Text>
-              <Text style={globalStyles.resultText}>{generatedUrl}</Text>
+              <Text style={globalStyles.sectionTitle}>
+                Generated URL ({generatedUrlBytes} bytes)
+              </Text>
+
+              <Text style={globalStyles.resultText}>
+                {generatedUrl}
+              </Text>
             </View>
 
             {generatedUrl !== '' && (
@@ -213,13 +251,16 @@ export default function CreateCard() {
               style={buttonStyle}
               onPress={() => void handleCopyUrl()}
             >
-              <Text style={globalStyles.primaryButtonText}>Copy URL</Text>
+              <Text style={globalStyles.primaryButtonText}>
+                Copy URL
+              </Text>
             </Pressable>
           </>
         )}
 
         <View style={[globalStyles.card, globalStyles.buttonGroup]}>
           <Text style={globalStyles.sectionTitle}>NFC</Text>
+
           <Pressable
             style={({ pressed }) => [
               ...buttonStyle({ pressed }),
@@ -228,8 +269,16 @@ export default function CreateCard() {
             onPress={() => void handleReadNfc()}
             disabled={isNfcBusy}
           >
-            {isNfcBusy && <ActivityIndicator size="small" color={colors.primary} />}
-            <Text style={globalStyles.primaryButtonText}>Read NFC</Text>
+            {isNfcBusy && (
+              <ActivityIndicator
+                size="small"
+                color={colors.primary}
+              />
+            )}
+
+            <Text style={globalStyles.primaryButtonText}>
+              Read NFC
+            </Text>
           </Pressable>
 
           {generatedUrl !== '' && (
@@ -241,16 +290,29 @@ export default function CreateCard() {
               onPress={() => void handleWriteNfc()}
               disabled={isNfcBusy}
             >
-              {isNfcBusy && <ActivityIndicator size="small" color={colors.primary} />}
-              <Text style={globalStyles.primaryButtonText}>Write NFC</Text>
+              {isNfcBusy && (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.primary}
+                />
+              )}
+
+              <Text style={globalStyles.primaryButtonText}>
+                Write NFC
+              </Text>
             </Pressable>
           )}
         </View>
 
         {nfcResult !== '' && (
           <View style={globalStyles.resultContainer}>
-            <Text style={globalStyles.sectionTitle}>NFC result</Text>
-            <Text style={globalStyles.resultText}>{nfcResult}</Text>
+            <Text style={globalStyles.sectionTitle}>
+              NFC result
+            </Text>
+
+            <Text style={globalStyles.resultText}>
+              {nfcResult}
+            </Text>
           </View>
         )}
       </ScrollView>
