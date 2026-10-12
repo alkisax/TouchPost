@@ -6,6 +6,7 @@ import { Pressable, Text, View } from 'react-native';
 import { ThemeContext } from '@/context/ThemeContext';
 import { createGlobalStyles } from '@/styles/global';
 
+
 export default function CreateCardInstructions() {
   const { colors } = useContext(ThemeContext);
   const globalStyles = createGlobalStyles(colors);

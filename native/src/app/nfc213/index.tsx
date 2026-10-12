@@ -13,6 +13,8 @@ import { readNfc } from '@/utils/readNfc';
 import { writeNfcUrl } from '@/utils/writeNfc';
 import NfcCapacityInfo from '@/components/NfcCapacityInfo';
 import Nfc213Instructions from '@/components/Nfc213Instructions';
+import GenerateQr from '@/components/GenerateQr';
+import PreviewCardButton from '@/components/PreviewCardButton';
 // import BackOfPostcardSvg from '@/components/BackOfPostcardSvg';
 
 export default function CreateCard() {
@@ -275,6 +277,8 @@ export default function CreateCard() {
             >
               <Text style={globalStyles.primaryButtonText}>Copy URL</Text>
             </Pressable>
+
+            <PreviewCardButton url={generatedUrl} />
           </>
         )}
 
@@ -312,6 +316,10 @@ export default function CreateCard() {
             <Text style={globalStyles.sectionTitle}>NFC result</Text>
             <Text style={globalStyles.resultText}>{nfcResult}</Text>
           </View>
+        )}
+
+        {generatedUrl !== '' && (
+          <GenerateQr url={generatedUrl} />
         )}
       </ScrollView>
     </SafeAreaView>

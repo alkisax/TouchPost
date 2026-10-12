@@ -26,6 +26,7 @@ import { readNfc } from '@/utils/readNfc';
 import { writeNfcUrl } from '@/utils/writeNfc';
 import NfcCapacityInfo from '@/components/NfcCapacityInfo';
 import CreateCardInstructions from '@/components/CreateCardInstructions';
+import PreviewCardButton from '@/components/PreviewCardButton';
 
 export default function CreateCard() {
   const { colors } = useContext(ThemeContext);
@@ -259,6 +260,7 @@ export default function CreateCard() {
                 Copy URL
               </Text>
             </Pressable>
+            <PreviewCardButton url={generatedUrl} />
           </>
         )}
 
