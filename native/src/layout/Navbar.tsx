@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { appName } from '@/constants/constants';
@@ -23,7 +23,15 @@ export default function Navbar() {
       ]}
     >
       <View style={styles.navbar}>
-        <Pressable onPress={() => router.push('/')}>
+        <Pressable
+          onPress={() => router.push('/')}
+          style={styles.brand}
+        >
+          <Image
+            source={require('../../assets/images/icon.png')}
+            style={styles.logo}
+          />
+
           <Text style={[styles.appName, { color: colors.text }]}>
             {appName}
           </Text>
@@ -68,5 +76,16 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     width: 40,
+  },
+  brand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  logo: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
   },
 });
