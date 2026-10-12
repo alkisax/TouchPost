@@ -13,10 +13,8 @@ export const appName = "TouchPost";
 // export const rewardedAdUnitId = 'ca-app-pub-4041382605494077/2956156117';
 
 // test ad ids
-export const bannerAdUnitId =
-  'ca-app-pub-3940256099942544/6300978111';
-export const rewardedAdUnitId =
-  'ca-app-pub-3940256099942544/5224354917';
+export const bannerAdUnitId = "ca-app-pub-3940256099942544/6300978111";
+export const rewardedAdUnitId = "ca-app-pub-3940256099942544/5224354917";
 
 export const countries = [
   {
@@ -42,5 +40,65 @@ export const countries = [
   {
     code: "IT",
     name: "Italy",
+  },
+  {
+    code: "TH",
+    name: "Thailand",
+  },
+  {
+    code: "KH",
+    name: "Cambodia",
+  },
+  {
+    code: "VN",
+    name: "Vietnam",
+  },
+  {
+    code: "EG",
+    name: "Egypt",
+  },
+  {
+    code: "BG",
+    name: "Bulgaria",
+  },
+  {
+    code: "MK",
+    name: "North Macedonia",
+  },
+  {
+    code: "AL",
+    name: "Albania",
+  },
+  {
+    code: "ME",
+    name: "Montenegro",
+  },
+  {
+    code: "BA",
+    name: "Bosnia and Herzegovina",
+  },
+  {
+    code: "HU",
+    name: "Hungary",
+  },
+  {
+    code: "DE",
+    name: "Germany",
+  },
+  {
+    code: "NL",
+    name: "Netherlands",
+  },
+  {
+    code: "ES",
+    name: "Spain",
+  },
+  {
+    code: "YU",
+    name: "Yugoslavia",
+  },
+  {
+    code: "SU",
+    name: "USSR",
   },
 ];
