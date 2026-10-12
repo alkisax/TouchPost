@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import GenerateQr from '@/components/GenerateQr';
 import * as Clipboard from 'expo-clipboard';
 
 import { publicWebUrl } from '@/constants/constants';
@@ -317,6 +318,10 @@ export default function CreateCard() {
               {nfcResult}
             </Text>
           </View>
+        )}
+
+        {generatedUrl !== '' && (
+          <GenerateQr url={generatedUrl} />
         )}
       </ScrollView>
     </SafeAreaView>
