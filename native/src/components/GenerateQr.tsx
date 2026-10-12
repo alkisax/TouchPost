@@ -1,10 +1,8 @@
 // native/src/components/GenerateQr.tsx
 
-import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-
-import { useContext } from 'react';
+import { useState, useContext } from 'react';
 import { ThemeContext } from '@/context/ThemeContext';
 import { createGlobalStyles, SPACING } from '@/styles/global';
 
