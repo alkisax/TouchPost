@@ -27,6 +27,7 @@ import { writeNfcUrl } from '@/utils/writeNfc';
 import NfcCapacityInfo from '@/components/NfcCapacityInfo';
 import CreateCardInstructions from '@/components/CreateCardInstructions';
 import PreviewCardButton from '@/components/PreviewCardButton';
+import MultiPasteImageUrls from '@/components/MultiPasteImageUrls';
 
 export default function CreateCard() {
   const { colors } = useContext(ThemeContext);
@@ -197,6 +198,11 @@ export default function CreateCard() {
           <CountryCodePicker
             countryCode={countryCode}
             onChange={setCountryCode}
+          />
+
+          <MultiPasteImageUrls
+            imageUrls={imageUrls}
+            setImageUrls={setImageUrls}
           />
 
           {imageUrls.map((url, index) => (
